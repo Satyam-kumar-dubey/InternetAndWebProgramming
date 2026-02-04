@@ -1,0 +1,38 @@
+
+*
+{
+    background-color: black;
+}
+
+.div
+{
+    border: 2px solid red;
+    border-radius: 2rem;
+    border-style: dotted;
+}
+h1
+{
+    color: aqua;
+    text-align: center;
+   
+}
+.div2
+{
+    border: 2px solid rgb(0, 255, 26);
+    border-radius: 2rem;
+    border-style: groove;
+    background-color: aquamarine;
+}
+.div3
+{
+    border: 2px solid rgb(8, 98, 187);
+    border-radius: 2rem;
+    border-style: dashed;
+    background-color: blue;
+}.div4
+{
+    border: 2px solid rgb(244, 122, 0);
+    border-radius: 2rem;
+    border-style: inherit;
+    background-color: antiquewhite;
+}
