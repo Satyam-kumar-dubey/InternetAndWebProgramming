@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClassWork Test</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.5; }
+    nav a { margin-right: 12px; }
+    section { border: 1px solid #ddd; padding: 16px; margin: 18px 0; border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: left; }
+    th { background: #f3f3f3; }
+    label { display: block; margin-top: 10px; }
+    input, select, textarea, button { width: 100%; padding: 8px; margin-top: 6px; }
+    button { width: auto; cursor: pointer; }
+    img { max-width: 100%; height: auto; border-radius: 8px; }
+    .note { color: #555; font-size: 0.95rem; }
+  </style>
+</head>
+
+<body>
+  <h1>ClassWork Test</h1>
+  <p class="note">
+    This page includes: Table, Form, List, Video, Audio, Image, and Hyperlinks.
+  </p>
+
+  <!-- Hyperlink (Anchor tags) + internal navigation -->
+  <nav>
+    <strong>Go to:</strong>
+    <a href="#table">Table</a>
+    <a href="#form">Form</a>
+    <a href="#list">List</a>
+    <a href="#image">Image</a>
+    <a href="#video">Video</a>
+    <a href="#audio">Audio</a>
+    <a href="https://www.github.com/satyam-kumar-dubey" target="_blank">GitHub</a>
+  </nav>
+
+  <!-- TABLE -->
+  <section id="table">
+    <h2>1) Table</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Name</th>
+          <th>Class</th>
+          <th>Marks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>23MEI10051</td>
+          <td>Prakhar</td>
+          <td>3rd Year</td>
+          <td>92</td>
+        </tr>
+        <tr>
+          <td>23MEI10023</td>
+          <td>Nishant</td>
+          <td>3rd Year</td>
+          <td>88</td>
+        </tr>
+        <tr>
+          <td>23MIM10076</td>
+          <td>Pahadi</td>
+          <td>3rd Year</td>
+          <td>95</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FORM -->
+  <section id="form">
+    <h2>2) Form</h2>
+    <form action="#" method="post">
+  <label>
+    Full Name:
+    <input type="text" name="fullname" placeholder="Enter your name" required />
+  </label>
+
+  <label>
+    Email:
+    <input type="email" name="email" placeholder="Enter your email" required />
+  </label>
+
+  <label>
+    Date of Birth (DOB):
+    <input type="date" name="dob" required />
+  </label>
+
+  <label>
+    Gender:
+    <select name="gender">
+      <option value="male">Male</option>
+      <option value="female">Female</option>
+      <option value="other">Other</option>
+    </select>
+  </label>
+
+  <label>
+    Message:
+    <textarea name="message" rows="4" placeholder="Write something..."></textarea>
+  </label>
+
+  <label>
+    <input type="checkbox" name="agree" required />
+    I agree to the terms
+  </label>
+
+  <button type="submit">Submit</button>
+</form>
+
+  </section>
+
+  <!-- LIST -->
+  <section id="list">
+    <h2>3) List</h2>
+
+    <h3>Unordered List (bullets)</h3>
+    <ul>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>JavaScript</li>
+    </ul>
+
+    <h3>Ordered List (numbers)</h3>
+    <ol>
+      <li>Open the file</li>
+      <li>Edit the content</li>
+      <li>Save and refresh</li>
+    </ol>
+  </section>
+
+  <!-- IMAGE -->
+  <section id="image">
+    <h2>4) Image</h2>
+    <img
+      src="./satyam.png"
+      alt="Sample placeholder image"
+    />
+  </section>
+
+  <!-- VIDEO -->
+  <section id="video">
+    <h2>5) Video</h2>
+    <video controls width="100%">
+      <!-- Replace this with your own video file path -->
+      <source src="https://www.pexels.com/video/airshow-planes-line-up-in-an-airfield-2916653/" type="video/mp4" />
+      
+    </video>
+  </section>
+
+  <!-- AUDIO -->
+  <section id="audio">
+    <h2>6) Audio</h2>
+    <audio controls>
+
+      <source src="https://pixabay.com/music/trap-berry-groovy-bass-trap-476603/" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+  </section>
+
+  <footer class="note">
+   
+  </footer>
+</body>
+</html>

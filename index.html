@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Weather App (3-Day)</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 14px; margin-top: 14px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .day { flex: 1; min-width: 220px; border: 1px solid #eee; border-radius: 10px; padding: 12px; }
+    label { display: block; margin: 10px 0 6px; }
+    select, button { padding: 10px; width: 100%; max-width: 360px; }
+    button { cursor: pointer; max-width: 160px; }
+    .muted { color: #555; }
+    .error { color: #b00020; }
+    .title { margin: 0; }
+  </style>
+</head>
+<body>
+  <h1 class="title">Simple Weather App (3-Day Forecast)</h1>
+  <p class="muted">Select a city and click “Get Weather”.</p>
+
+  <label for="city">Select City:</label>
+  <select id="city">
+    <option value="Delhi" selected>Delhi</option>
+    <option value="Mumbai">Mumbai</option>
+    <option value="Bengaluru">Bengaluru</option>
+    <option value="Kolkata">Kolkata</option>
+    <option value="Chennai">Chennai</option>
+    <option value="Hyderabad">Hyderabad</option>
+    <option value="Pune">Pune</option>
+    <option value="Jaipur">Jaipur</option>
+  </select>
+
+  <div style="margin-top: 12px;">
+    <button id="btn">Get Weather</button>
+  </div>
+
+  <div id="status" class="card muted" style="display:none;"></div>
+  <div id="result" class="card" style="display:none;"></div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
+    const cityEl = document.getElementById("city");
+    const btn = document.getElementById("btn");
+
+    function setStatus(msg, isError = false) {
+      statusEl.style.display = "block";
+      statusEl.className = "card " + (isError ? "error" : "muted");
+      statusEl.textContent = msg;
+    }
+
+    function hideStatus() {
+      statusEl.style.display = "none";
+      statusEl.textContent = "";
+    }
+
+    function weatherCodeToText(code) {
+      // Based on WMO interpretation codes used by Open-Meteo
+      if (code === 0) return "Clear sky ☀️";
+      if ([1,2,3].includes(code)) return "Partly cloudy / Overcast ⛅";
+      if ([45,48].includes(code)) return "Fog 🌫️";
+      if ([51,53,55].includes(code)) return "Drizzle 🌦️";
+      if ([56,57].includes(code)) return "Freezing drizzle 🧊";
+      if ([61,63,65].includes(code)) return "Rain 🌧️";
+      if ([66,67].includes(code)) return "Freezing rain 🧊🌧️";
+      if ([71,73,75].includes(code)) return "Snow ❄️";
+      if (code === 77) return "Snow grains ❄️";
+      if ([80,81,82].includes(code)) return "Rain showers 🌦️";
+      if ([85,86].includes(code)) return "Snow showers 🌨️";
+      if (code === 95) return "Thunderstorm ⛈️";
+      if ([96,99].includes(code)) return "Thunderstorm + hail ⛈️🧊";
+      return "Unknown";
+    }
+
+    async function getWeather() {
+      const city = cityEl.value;
+      resultEl.style.display = "none";
+      resultEl.innerHTML = "";
+      setStatus("Loading…");
+
+      try {
+        // 1) Geocoding: city name -> lat/long
+        // (We filter to India using countryCode=IN; remove it if you want worldwide)
+        const geoUrl =
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json&countryCode=IN`;
+
+        const geoRes = await fetch(geoUrl);
+        if (!geoRes.ok) throw new Error("Geocoding request failed.");
+        const geoData = await geoRes.json();
+
+        if (!geoData.results || geoData.results.length === 0) {
+          throw new Error("City not found. Try another city.");
+        }
+
+        const place = geoData.results[0];
+        const { latitude, longitude, name, country, timezone } = place;
+
+        // 2) Forecast: lat/long -> daily forecast (3 days)
+        const forecastUrl =
+          `https://api.open-meteo.com/v1/forecast` +
+          `?latitude=${latitude}&longitude=${longitude}` +
+          `&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weather_code` +
+          `&forecast_days=3&timezone=auto`;
+
+        const wRes = await fetch(forecastUrl);
+        if (!wRes.ok) throw new Error("Weather request failed.");
+        const wData = await wRes.json();
+
+        const d = wData.daily;
+        const units = wData.daily_units;
+
+        hideStatus();
+        resultEl.style.display = "block";
+
+        const header = `
+          <h2 style="margin-top:0;">${name}, ${country}</h2>
+          <p class="muted" style="margin-top:-6px;">
+            Coordinates: ${latitude.toFixed(2)}, ${longitude.toFixed(2)} • Timezone: ${wData.timezone || timezone || "auto"}
+          </p>
+        `;
+
+        let daysHtml = `<div class="row">`;
+
+        for (let i = 0; i < d.time.length; i++) {
+          const date = d.time[i];
+          const tMax = d.temperature_2m_max[i];
+          const tMin = d.temperature_2m_min[i];
+          const rain = d.precipitation_sum[i];
+          const code = d.weather_code[i];
+
+          daysHtml += `
+            <div class="day">
+              <h3 style="margin-top:0;">${date}</h3>
+              <p><strong>${weatherCodeToText(code)}</strong> (code: ${code})</p>
+              <p>Max: <strong>${tMax}${units.temperature_2m_max}</strong></p>
+              <p>Min: <strong>${tMin}${units.temperature_2m_min}</strong></p>
+              <p>Precipitation: <strong>${rain} ${units.precipitation_sum}</strong></p>
+            </div>
+          `;
+        }
+
+        daysHtml += `</div>`;
+        resultEl.innerHTML = header + daysHtml;
+
+      } catch (err) {
+        setStatus(err.message || "Something went wrong.", true);
+      }
+    }
+
+    btn.addEventListener("click", getWeather);
+    // Auto-load once
+    getWeather();
+  </script>
+</body>
+</html>
