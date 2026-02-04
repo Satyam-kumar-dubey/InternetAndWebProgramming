@@ -1,38 +1,34 @@
 
 *
 {
-    background-color: black;
+    padding: 0;
+    margin: 0;
 }
-
-.div
+.main
 {
-    border: 2px solid red;
-    border-radius: 2rem;
-    border-style: dotted;
-}
-h1
-{
-    color: aqua;
-    text-align: center;
-   
-}
-.div2
-{
-    border: 2px solid rgb(0, 255, 26);
-    border-radius: 2rem;
-    border-style: groove;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
     background-color: aquamarine;
 }
-.div3
+.div1
 {
-    border: 2px solid rgb(8, 98, 187);
-    border-radius: 2rem;
-    border-style: dashed;
-    background-color: blue;
-}.div4
-{
-    border: 2px solid rgb(244, 122, 0);
-    border-radius: 2rem;
-    border-style: inherit;
-    background-color: antiquewhite;
+    background-color: white;;
+    height: 30vw;
+    width: 30vw;
+    font-size: 20px;
+    border: 2px solid white;
+    padding: 10px;
+    margin: 10px;
+    text-align: center;
+    box-shadow: 10px 10px 5px gray;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h1{
+    color: tomato;
 }
