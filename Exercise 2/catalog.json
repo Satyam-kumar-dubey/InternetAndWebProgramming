@@ -1,0 +1,54 @@
+{
+  "store": {
+    "name": "Online Book Store",
+    "currency": "INR",
+    "categories": [
+      {
+        "name": "Fiction",
+        "books": [
+          {
+            "id": "B001",
+            "title": "The Silent River",
+            "author": { "name": "Asha Verma", "country": "IN" },
+            "price": 399,
+            "rating": 4.3,
+            "stock": 12,
+            "tags": ["mystery", "thriller"]
+          },
+          {
+            "id": "B002",
+            "title": "Monsoon Letters",
+            "author": { "name": "Rohit Singh", "country": "IN" },
+            "price": 299,
+            "rating": 4.0,
+            "stock": 0,
+            "tags": ["romance"]
+          }
+        ]
+      },
+      {
+        "name": "Non-Fiction",
+        "books": [
+          {
+            "id": "B003",
+            "title": "Learn Python Fast",
+            "author": { "name": "Neha Kapoor", "country": "IN" },
+            "price": 549,
+            "rating": 4.6,
+            "stock": 7,
+            "tags": ["programming", "python"]
+          },
+          {
+            "id": "B004",
+            "title": "Money Basics",
+            "author": { "name": "Asha Verma", "country": "IN" },
+            "price": 450,
+            "rating": 4.1,
+            "stock": 4,
+            "tags": ["finance"]
+          }
+        ]
+      }
+    ]
+  }
+}
