@@ -1,0 +1,48 @@
+[
+  {
+    "id": "E001",
+    "name": "Asha Verma",
+    "pay": {
+      "base_salary": 60000,
+      "allowances": {
+        "hra": 12000,
+        "da": 6000,
+        "bonus": 3000,
+        "other": 0
+      },
+      "overtime": {
+        "hours": 10,
+        "rate_per_hour": 500
+      },
+      "deductions": {
+        "pf": 3600,
+        "professional_tax": 200,
+        "insurance": 800,
+        "other": 0
+      }
+    }
+  },
+  {
+    "id": "E002",
+    "name": "Rohit Singh",
+    "pay": {
+      "base_salary": 35000,
+      "allowances": {
+        "hra": 7000,
+        "da": 3500,
+        "bonus": 0,
+        "other": 1000
+      },
+      "overtime": {
+        "hours": 0,
+        "rate_per_hour": 0
+      },
+      "deductions": {
+        "pf": 2100,
+        "professional_tax": 200,
+        "insurance": 500,
+        "other": 300
+      }
+    }
+  }
+]
