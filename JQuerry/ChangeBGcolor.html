@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Change Background Color (jQuery)</title>
+
+  <!-- jQuery CDN -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 24px;
+    }
+    .btn {
+      padding: 10px 14px;
+      margin: 6px 6px 6px 0;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .row {
+      margin-top: 14px;
+    }
+    label {
+      display: inline-block;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Change Background Color using jQuery</h2>
+
+  <button class="btn" id="red">Red</button>
+  <button class="btn" id="green">Green</button>
+  <button class="btn" id="blue">Blue</button>
+  <button class="btn" id="reset">Reset</button>
+
+  <div class="row">
+    <label for="picker">Pick any color:</label>
+    <input type="color" id="picker" value="#ffffff" />
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $("#red").click(function () {
+        $("body").css("background-color", "red");
+      });
+
+      $("#green").click(function () {
+        $("body").css("background-color", "green");
+      });
+
+      $("#blue").click(function () {
+        $("body").css("background-color", "blue");
+      });
+
+      $("#reset").click(function () {
+        $("body").css("background-color", "white");
+        $("#picker").val("#ffffff");
+      });
+
+      $("#picker").on("input change", function () {
+        $("body").css("background-color", $(this).val());
+      });
+    });
+  </script>
+</body>
+</html>
