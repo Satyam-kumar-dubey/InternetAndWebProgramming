@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather App</title>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 24px; background: #f5f7fb; }
+    .app { max-width: 560px; margin: 0 auto; background: #fff; padding: 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    h1 { margin: 0 0 12px; font-size: 20px; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    input { flex: 1; min-width: 200px; padding: 10px 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 14px; }
+    button { padding: 10px 14px; border: 0; border-radius: 10px; cursor: pointer; font-size: 14px; }
+    button.primary { background: #2563eb; color: #fff; }
+    button.secondary { background: #e5e7eb; }
+    .status { margin-top: 10px; font-size: 13px; color: #555; min-height: 18px; }
+    .error { color: #b91c1c; }
+    .card { margin-top: 14px; padding: 14px; border: 1px solid #eee; border-radius: 12px; display: none; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .city { font-size: 16px; font-weight: 700; }
+    .desc { font-size: 13px; color: #555; text-transform: capitalize; }
+    .temp { font-size: 46px; font-weight: 800; line-height: 1; }
+    .meta { margin-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; color: #333; }
+    .meta div { padding: 10px; border-radius: 10px; background: #f5f7fb; }
+    .small { font-size: 12px; color: #666; margin-top: 10px; }
+    .hint { margin-top: 10px; font-size: 12px; color: #6b7280; }
+    code { background: #f3f4f6; padding: 2px 6px; border-radius: 6px; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1>Weather App</h1>
+
+    <div class="row">
+      <input id="cityInput" type="text" placeholder="Enter city (e.g., Mumbai)" />
+      <button class="primary" id="searchBtn">Search</button>
+      <button class="secondary" id="locBtn" title="Use my location">📍 Use Location</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <div class="card" id="weatherCard">
+      <div class="top">
+        <div>
+          <div class="city" id="cityName">—</div>
+          <div class="desc" id="weatherDesc">—</div>
+        </div>
+        <div class="temp" id="temp">—°</div>
+      </div>
+
+      <div class="meta">
+        <div>Humidity: <b id="humidity">—</b>%</div>
+        <div>Wind: <b id="wind">—</b> km/h</div>
+        <div>Latitude: <b id="lat">—</b></div>
+        <div>Longitude: <b id="lon">—</b></div>
+      </div>
+
+      <div class="small" id="updatedAt"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const cardEl = document.getElementById("weatherCard");
+
+    const cityNameEl = document.getElementById("cityName");
+    const weatherDescEl = document.getElementById("weatherDesc");
+    const tempEl = document.getElementById("temp");
+    const humidityEl = document.getElementById("humidity");
+    const windEl = document.getElementById("wind");
+    const latEl = document.getElementById("lat");
+    const lonEl = document.getElementById("lon");
+    const updatedAtEl = document.getElementById("updatedAt");
+
+    const cityInput = document.getElementById("cityInput");
+    const searchBtn = document.getElementById("searchBtn");
+    const locBtn = document.getElementById("locBtn");
+
+    function setStatus(msg, isError = false) {
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (isError ? " error" : "");
+    }
+
+    function showCard(show) {
+      cardEl.style.display = show ? "block" : "none";
+    }
+
+    function weatherCodeToText(code) {
+      if (code === 0) return "Clear sky";
+      if (code === 1 || code === 2 || code === 3) return "Partly cloudy";
+      if (code === 45 || code === 48) return "Fog";
+      if ([51,53,55,56,57].includes(code)) return "Drizzle";
+      if ([61,63,65,66,67].includes(code)) return "Rain";
+      if ([71,73,75,77].includes(code)) return "Snow";
+      if ([80,81,82].includes(code)) return "Rain showers";
+      if ([85,86].includes(code)) return "Snow showers";
+      if ([95,96,99].includes(code)) return "Thunderstorm";
+      return "Weather";
+    }
+
+    async function geocodeCity(city) {
+      // Open-Meteo geocoding (no key)
+      const url =
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok || !data.results || data.results.length === 0) {
+        throw new Error("City not found. Try another name.");
+      }
+      return data.results[0];
+    }
+
+    async function fetchWeatherByCoords(lat, lon, placeLabel) {
+      setStatus("Loading weather...");
+      showCard(false);
+
+      const url =
+        `https://api.open-meteo.com/v1/forecast` +
+        `?latitude=${encodeURIComponent(lat)}` +
+        `&longitude=${encodeURIComponent(lon)}` +
+        `&current=temperature_2m,weather_code,wind_speed_10m` +
+        `&hourly=relative_humidity_2m` +
+        `&timezone=auto`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!res.ok) throw new Error("Failed to fetch weather.");
+
+      const temp = Math.round(data.current.temperature_2m);
+      const code = data.current.weather_code;
+      const windKmh = Math.round(data.current.wind_speed_10m);
+
+      const humidity = (data.hourly && data.hourly.relative_humidity_2m && data.hourly.relative_humidity_2m.length)
+        ? data.hourly.relative_humidity_2m[0]
+        : null;
+
+      cityNameEl.textContent = placeLabel || "Your Location";
+      weatherDescEl.textContent = weatherCodeToText(code);
+      tempEl.textContent = `${temp}°C`;
+      humidityEl.textContent = humidity ?? "—";
+      windEl.textContent = windKmh;
+      latEl.textContent = Number(lat).toFixed(4);
+      lonEl.textContent = Number(lon).toFixed(4);
+
+      updatedAtEl.textContent = data.current.time
+        ? `Updated: ${data.current.time}`
+        : "";
+
+      setStatus("");
+      showCard(true);
+    }
+
+    async function fetchByCity(city) {
+      const c = city.trim();
+      if (!c) {
+        setStatus("Type a city name first.", true);
+        return;
+      }
+
+      try {
+        const place = await geocodeCity(c);
+        const label = `${place.name}${place.country ? ", " + place.country : ""}`;
+        await fetchWeatherByCoords(place.latitude, place.longitude, label);
+      } catch (err) {
+        setStatus("❌ " + err.message, true);
+      }
+    }
+
+    // Events
+    searchBtn.addEventListener("click", () => fetchByCity(cityInput.value));
+    cityInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fetchByCity(cityInput.value);
+    });
+
+    locBtn.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        setStatus("Geolocation is not supported in this browser.", true);
+        return;
+      }
+      setStatus("Requesting location...");
+      navigator.geolocation.getCurrentPosition(
+        (pos) => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude, "Your Location"),
+        () => setStatus("Location permission denied or unavailable.", true),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    });
+  </script>
+</body>
+</html>
